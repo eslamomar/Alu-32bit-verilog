@@ -1,0 +1,41 @@
+module testbench(); 
+  
+//memory file reg
+reg [103:0] Mem [0:20];
+integer PC;   //counter for memory swap
+//_______________________________________________
+//inputs
+reg  [31:0]a;
+reg  [31:0]b;
+reg  [2:0]f;
+//outputs
+wire [31:0]y;
+wire  zero;
+//________________________________________________
+ALU alu (.a(a), .b(b), .f(f), .y(y), .zero(zero));
+//________________________________________________
+initial $readmemh("data.txt",Mem); 
+
+//________________________________________________
+initial begin 
+ 
+for (PC=0;PC<21;PC=PC+1)  begin
+// Get inputs from memory 
+         a=Mem[PC][99:68];    //A
+         b=Mem[PC][67:36];    //B
+         f=Mem[PC][102:100];  //control signal
+//print the test case vector 
+         
+$display("%d: Operation=%h A=%h B=%h Y=%h zero=%h",PC,Mem[PC][102:100],Mem[PC][99:68],Mem[PC][67:36],Mem[PC][35:4],Mem[PC][0:0]);
+     
+// check the correct input 
+#10;
+      if((y==Mem[PC][35:4])&(zero==Mem[PC][0:0]))
+      $display("correct");
+      else 
+      $display("wrong");
+      end
+
+end
+//____________________________________________________
+endmodule 
